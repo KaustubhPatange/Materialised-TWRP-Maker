@@ -256,12 +256,26 @@ tools\cecho.exe {0a}
 md %recboot%_new
 cd %recboot%_new
 echo  Unpacking Image Now...
-"%~dp0Scripts\unpackimg.exe" %capp%
+"%~dp0Scripts\unpackimg.exe" %recboot%
 echo.
 echo.
 :startyourwork1
 cd "%~dp0"
-call Scripts\Patch.exe
+if not exist ramdisk\twres (
+echo.
+tools\cecho.exe {0c} * The Image you have selected is not TWRP image.
+echo.
+echo.
+tools\cecho.exe {0b} * Please make a valid Selection. {0a}
+echo.
+echo.
+if exist split_img (rd /s /q split_img)
+if exist ramdisk (rd /s /q ramdisk)
+if exist %recboot%_new (rd /s /q %recboot%_new)
+pause
+goto main
+)
+call Scripts\res.exe
 echo.
 ping localhost -n 1 >nul
 cd "%~dp0"
@@ -311,9 +325,11 @@ if exist "split_img" (rd /s /q "split_img")
 cd "%~dp0"
 echo.
 echo  Deleting everything except that Image !
-if exist ramdisk-new.cpio.%compext% (del ramdisk-new.cpio.%compext% /Q)
-if exist Image-new.img (del Image-new.img /Q)
+if exist %capp%_new (rd /s /q %capp%_new /Q)
 :done
+if exist ramdisk-new.cpio.%compext% (del ramdisk-new.cpio.%compext% /Q)
+if exist kernel-new.mtk (del kernel-new.mtk /Q)
+if exist recovery-new.mtk (del recovery-new.mtk /Q)
 echo.
 echo  Done!
 echo.
@@ -360,8 +376,7 @@ echo.
 "%~dp0tools\cecho.exe" {0e} Target Saved at %unrecboot%\image-new.img {07}
 echo.
 echo.
-pause
-goto main
+goto done
 :unpack
 cd "%~dp0"
 cls
@@ -406,8 +421,8 @@ cls
 echo.
 echo *******************************************************************************
 echo *                                                                             *
-tools\cecho.exe * {0b}               "Automatic Materialised TWRP Maker v1.0.1"
-tools\cecho.exe {07}                   *
+tools\cecho.exe * {0b}             "Automatic Materialised TWRP Maker v1.0.2"
+tools\cecho.exe {07}                     *
 echo.
 tools\cecho.exe *                recovery+materialised twrp themed by{0b} KP@2016
 tools\cecho.exe {07}                 *
